@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Puerto Rico Highlight Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    #map {
+      width: 100%;
+      height: 100vh;
+      max-height: 600px;
+      border-radius: 24px;
+      overflow: hidden;
+    }
+    @media (max-width: 768px) {
+      #map {
+        height: 400px;
+      }
+    }
+    @media (max-width: 480px) {
+      #map {
+        height: 300px;
+      }
+    }
+
+    /* Legend styling */
+    .legend {
+      background: white;
+      padding: 10px;
+      line-height: 18px;
+      color: #333;
+      font-size: 14px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .legend i {
+      width: 18px;
+      height: 18px;
+      float: left;
+      margin-right: 8px;
+      opacity: 0.8;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    var map = L.map('map', { zoomControl: true });
+
+    // Grayscale tile layer
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors & <a href="https://carto.com/">CARTO</a>',
+    }).addTo(map);
+
+    var cities = [
+      { name: "San Juan",    coords: [18.4655, -66.1057],   color: "#3908ff" },
+      { name: "Mayagüez",    coords: [18.2013, -67.1396],   color: "#f9e698" },
+      { name: "Caguas",      coords: [18.2328, -66.0457],   color: "#f9e698" },
+      { name: "Jayuya",      coords: [18.2191, -66.5913],   color: "#2bb24b" },
+      { name: "Aibonito",    coords: [18.1397, -66.2674],   color: "#2bb24b" },
+      { name: "Juncos",      coords: [18.2272, -65.9185],   color: "#3908ff" },
+      { name: "Comerío",     coords: [18.2174, -66.22675],  color: "#3908ff" },
+      { name: "Guaynabo",    coords: [18.3876, -66.1167],   color: "#f9e698" },
+      { name: "Río Grande",  coords: [18.3808, -65.8160],   color: "#3908ff" },
+      { name: "Lares",       coords: [18.2944, -66.8774],   color: "#3908ff" }
+    ];
+
+    // Add circle markers
+    cities.forEach(function(city) {
+      L.circleMarker(city.coords, {
+        color: city.color,
+        radius: 10,
+        fillColor: city.color,
+        fillOpacity: 0.8
+      }).bindPopup(`<b>${city.name}</b>`).addTo(map);
+    });
+
+    // Fit bounds to include all cities
+    var bounds = L.latLngBounds(cities.map(city => city.coords));
+    map.fitBounds(bounds, { padding: [30, 30] });
+
+    // Add legend
+    var legend = L.control({position: 'bottomleft'});
+    legend.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'legend');
+      div.innerHTML += "<i style='background: #f9e698'></i> Feria Calle <br>";
+      div.innerHTML += "<i style='background: #2bb24b'></i> Navidad <br>";
+      div.innerHTML += "<i style='background: #3908ff'></i> Talleres Calle <br>";
+      return div;
+    };
+    legend.addTo(map);
+  </script>
+</body>
+</html>
